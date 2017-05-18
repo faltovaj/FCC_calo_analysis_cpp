@@ -80,6 +80,7 @@ def draw_text(lines, coordinates = [0.1,0.8,0.5,0.9], colour = 36, border = 1):
       print(line)
       text.Draw()
       ROOT.SetOwnership(text,False)
+   return text
 
 def draw_rectangle(start = [0,0], end = [1,1], colour = 2, width = 2):
    lines = []
@@ -92,3 +93,78 @@ def draw_rectangle(start = [0,0], end = [1,1], colour = 2, width = 2):
       line.SetLineWidth(width)
       line.Draw()
       ROOT.SetOwnership(line,False)
+
+def prepare_graph(graph, name, title, colour = 1, markerStyle = 21, factor = 1):
+   # graph settings
+   graph.SetTitle(title)
+   graph.SetName(name)
+   graph.SetMarkerStyle(markerStyle)
+   graph.SetMarkerSize(1.3)
+   graph.SetMarkerColor(colour)
+   graph.SetLineColor(colour)
+   # set Y axis
+   graph.GetYaxis().CenterTitle()
+   graph.GetYaxis().SetTitleSize(0.06)
+   graph.GetYaxis().SetTitleOffset(1.1)
+   graph.GetYaxis().SetLabelSize(0.045)
+   graph.GetYaxis().SetNdivisions(504)
+   # set X axis
+   graph.GetXaxis().SetTitleSize(0.07)
+   graph.GetXaxis().SetTitleOffset(1.)
+   graph.GetXaxis().SetLabelSize(0.05)
+
+def prepare_second_graph(secondary, main, name, title, factor = 2):
+   # graph settings
+   secondary.SetTitle(title)
+   secondary.SetName(name)
+   secondary.SetMarkerStyle(main.GetMarkerStyle())
+   secondary.SetMarkerSize(main.GetMarkerSize())
+   secondary.SetMarkerColor(main.GetMarkerColor())
+   secondary.SetLineColor(main.GetLineColor())
+   # set X axis
+   secondary.GetXaxis().SetLabelSize(0)
+   secondary.GetXaxis().SetTitleSize(0)
+   secondary.GetXaxis().SetTickLength(main.GetXaxis().GetTickLength()*factor)
+   # set Y axis
+   secondary.GetYaxis().CenterTitle()
+   secondary.GetYaxis().SetLabelSize(main.GetYaxis().GetLabelSize()*factor)
+   secondary.GetYaxis().SetLabelOffset(main.GetYaxis().GetLabelOffset()/factor)
+   secondary.GetYaxis().SetTitleSize(main.GetYaxis().GetTitleSize()*factor)
+   secondary.GetYaxis().SetTitleOffset(main.GetYaxis().GetTitleOffset()/factor)
+   secondary.GetYaxis().SetTickLength(main.GetYaxis().GetTickLength())
+   secondary.GetYaxis().SetNdivisions(506)
+
+def prepare_single_canvas(name, title):
+   c = TCanvas(name, title, 1200, 900)
+   c.SetTopMargin(0.01)
+   c.SetRightMargin(0.03)
+   c.SetLeftMargin(0.15)
+   c.SetBottomMargin(0.15)
+   ROOT.SetOwnership(c,False)
+   return c
+
+def prepare_double_canvas(name, title, factor = 1):
+   c = TCanvas(name, title, 1200, int(900 + 900 / factor))
+   pad1 = TPad("pad1","pad1",0,0,1,factor / (1 + factor))
+   pad2 = TPad("pad2","pad2",0,factor / (1 + factor),1,1)
+   pad2.SetBottomMargin(0.01)
+   pad2.SetRightMargin(0.03)
+   pad2.SetLeftMargin(0.15)
+   pad1.SetBorderMode(0)
+   pad1.SetTopMargin(0.01)
+   pad1.SetRightMargin(0.03)
+   pad1.SetLeftMargin(0.15)
+   pad1.SetBottomMargin(0.15)
+   pad2.SetBorderMode(0)
+   pad2.SetGridy()
+   pad1.SetTickx(1)
+   pad2.SetTickx(1)
+   pad1.SetTicky(1)
+   pad2.SetTicky(1)
+   pad1.Draw()
+   pad2.Draw()
+   pad1.cd()
+   ROOT.SetOwnership(c,False)
+   ROOT.SetOwnership(pad1,False)
+   ROOT.SetOwnership(pad2,False)
+   return c, pad1, pad2

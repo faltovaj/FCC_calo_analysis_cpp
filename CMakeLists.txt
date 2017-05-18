@@ -50,8 +50,8 @@ ROOT_GENERATE_DICTIONARY(CaloAnalysisDict
    ReconstructionExample.h
    SingleParticleRecoMonitors.h
    ClustersAnalysis.h
-   SimpleClusters.h	
-   PileupNoise.h		
+   SimpleClusters.h
+   PileupNoise.h
    Decoder.h
    LINKDEF LinkDef.h)
 

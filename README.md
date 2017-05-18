@@ -242,12 +242,10 @@ Example of use of additional parameters:
 
 ~~~{.sh}
 python scripts/plot_compareResolution.py '?/energy_resolution_plots.root' 0 -r noBfield withBfield -t 'Histogram title' -m 0.1 -l '?' --sequentialColours
-python scripts/plot_compareResolution.py '?/energy_resolution_plots.root' 0 -r noBfield withBfield -t 'Histogram title' -m 0.1 -l 'no B field: c1+a1/#sqrt{E}' 'B = 4 T: c2+a2/#sqrt{E}'
+python scripts/plot_compareResolution.py '?/energy_resolution_plots.root' 0 -r noBfield withBfield -t 'Histogram title' -m 0.1 -l 'no B field: formula' 'B = 4 T: formula'
 ~~~
 
-## Compare resolutions
- python scripts/plot_compareResolutions_jana.py resolution_?_bfield1.root 0 -r corrected notCorrected -t 'Electrons SW, 1.2X_{0}, B= 4T' -l 'Upstream correction: 0.0047 #oplus 0.0764/#sqrt{E}' 'No upstream correction: 0.0047 #oplus 0.0848/#sqrt{E}' -m 0.04
-
+`formula` inside the legend will be replaced with energy resolution formula with fit parameters.
 
 # How to create own analysis
 
