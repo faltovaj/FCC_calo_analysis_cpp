@@ -6,13 +6,13 @@ calo_init.parser.add_argument("-m","--axisMax", help="Maximum of the axis", type
 calo_init.parser.add_argument("--noLinearity", help="If linearity plot should not be drawn", action = 'store_true')
 calo_init.parser.add_argument("--roundBrackets", help="Use round brackets for unit", action = 'store_true')
 calo_init.parser.add_argument("--technical", help="Print parameters with all details", action = 'store_true')
-calo_init.parser.add_argument("--specialLabel", help="Additional label to be plotted", type=str, default = "FCC-hh simulation")
+calo_init.parser.add_argument("--specialLabel", help="Additional label to be plotted", type=str)
 calo_init.parse_args()
 calo_init.print_config()
 
 histName = calo_init.args.histogramName
 
-print("Draw linearity: ", calo_init.args.noLinearity)
+print("Draw linearity: ", not calo_init.args.noLinearity)
 
 from ROOT import gSystem, gROOT, TCanvas, TGraphErrors, TF1, gStyle, kRed, kBlue, kGray, TFile, TTree, TPad
 from draw_functions import prepare_graph, prepare_second_graph, prepare_single_canvas, prepare_double_canvas, draw_text
@@ -61,8 +61,10 @@ gLin.GetYaxis().SetRangeUser(-0.9,0.9)
 # Prepare canvas
 if not calo_init.args.noLinearity:
     cRes, padRes, padLin = prepare_double_canvas("resolution","Energy resolution", factor)
+    padRes.cd()
 else:
     cRes = prepare_single_canvas("resolution","Energy resolution")
+    cRes.cd()
 
 # Fit energy resolution
 fRes = TF1("res", "sqrt([0]*[0] + pow([1]/sqrt(x),2))",5,600)
@@ -77,9 +79,9 @@ if calo_init.args.axisMax:
     gRes.GetYaxis().SetRangeUser(0, calo_init.args.axisMax)
 formula = "#frac{#sigma_{E}}{E} = " + str(round(fitResult.Get().Parameter(0)*100,2))+"% #oplus #frac{"+str(round(fitResult.Get().Parameter(1)*100,2))+"%}{#sqrt{E}}"
 if not calo_init.args.noLinearity:
-    draw_text([formula], [0.65,0.8,0.95,0.95], colour, 0).SetTextSize(0.05)
+    draw_text([formula], [0.55,0.8,0.95,0.95], colour, 0).SetTextSize(0.05)
 else:
-    draw_text([formula], [0.65,0.7,0.95,0.85], colour, 0).SetTextSize(0.05)
+    draw_text([formula], [0.55,0.7,0.95,0.85], colour, 0).SetTextSize(0.05)
 if calo_init.args.technical:
     constString = "const: "+str(round(fitResult.Get().Parameter(0),4))+" #pm "+str(round(fitResult.Get().Error(0),4))
     samplingString = "sampl: "+str(round(fitResult.Get().Parameter(1),4))+" #pm "+str(round(fitResult.Get().Error(1),4))
@@ -95,13 +97,9 @@ if not calo_init.args.noLinearity:
     if calo_init.args.specialLabel:
         draw_text([calo_init.args.specialLabel], [0.67,0.78, 0.95,0.88], kGray+3, 0).SetTextSize(0.05*factor)
 
-if (calo_init.args.noLinearity):
-    pad2.cd()
-    gLin.Draw("ape")
-
 # Save canvas and root file with graph, const term and sampling term
 if calo_init.output(0):
-    cRes.SaveAs(calo_init.output(0)+".gif")
+    cRes.SaveAs(calo_init.output(0)+".png")
     plots = TFile(calo_init.output(0)+".root","RECREATE")
 else:
     cRes.SaveAs("energy_resolution_plots.gif")

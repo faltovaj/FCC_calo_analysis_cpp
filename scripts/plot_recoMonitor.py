@@ -63,9 +63,9 @@ gStyle.SetOptFit(1)
 for ifile, filename in enumerate(calo_init.filenamesIn):
     energy = calo_init.energy(ifile)
     filenameSim = filenamesSim[ifile] if checkRegexInSimInput else filenamesSim[0]
-    print "Initial particle energy: " + str(energy) + "GeV"
-    print "File with simulation results: " + filenameSim
-    print "File with reconstruction results: " + filename
+    print("Initial particle energy: " + str(energy) + "GeV")
+    print("File with simulation results: " + filenameSim)
+    print("File with reconstruction results: " + filename)
     if doMaterialInFrontCorrection:
         analysis = SingleParticleRecoMonitors(nameClusterCollection,
                                               nameParticlesCollection,
@@ -140,7 +140,7 @@ for ifile, filename in enumerate(calo_init.filenamesIn):
     # fit functions
     fitEnergy = TF1('fitEnergy','gaus',0.8*energy,1.2*energy)
     resultFitEn = hEn.Fit('fitEnergy','S')
-    resultFitEnCorr = hEnCorrected.Fit('fitEnergy','S')
+    resultFitEnCorr = hEnCorrected.Fit('fitEnergy','SRN')
     fitEnergy2 = TF1('fitEnergy2','gaus',resultFitEn.Get().Parameter(1)-2.*resultFitEn.Get().Parameter(2),
                      resultFitEn.Get().Parameter(1)+2.*resultFitEn.Get().Parameter(2))
     resultFitEn2 = hEn.Fit('fitEnergy2','SR')
@@ -148,9 +148,9 @@ for ifile, filename in enumerate(calo_init.filenamesIn):
                      resultFitEnCorr.Get().Parameter(1)+2.*resultFitEnCorr.Get().Parameter(2))
     resultFitEn2Corr = hEnCorrected.Fit('fitEnergy2Corr','SR')
     fitEta = TF1('fitEta','gaus',-10*dEta,10*dEta)
-    resEta = hEta.Fit('fitEta','S')
+    resEta = hEta.Fit('fitEta','SR')
     fitPhi = TF1('fitPhi','gaus',-10*dPhi,10*dPhi)
-    resPhi = hPhi.Fit('fitPhi','S')
+    resPhi = hPhi.Fit('fitPhi','SR')
 
 
     canv = TCanvas('ECal_monitor_plots_e'+str(energy)+'GeV', 'ECal', 2000, 1600 )

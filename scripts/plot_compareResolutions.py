@@ -5,11 +5,11 @@ calo_init.parser.add_argument("--title","-t",default="Energy resolution",type=st
 calo_init.parser.add_argument("-m","--axisMax", help="Maximum of the axis", type = float)
 calo_init.parser.add_argument("--sequentialColours", "--colours", help="If Gradient of colours should be used insted of ROOT standard", default=False, action='store_true')
 calo_init.parser.add_argument("--noLinearity", help="If linearity plot should not be drawn", action = 'store_true')
-calo_init.parser.add_argument("--specialLabel", help="Additional label to be plotted", type=str, default = "FCC-hh simulation")
+calo_init.parser.add_argument("--specialLabel", help="Additional label to be plotted", type=str)
 calo_init.parse_args()
 calo_init.print_config()
 
-print("Draw linearity: ", calo_init.args.noLinearity)
+print("Draw linearity: ", not calo_init.args.noLinearity)
 
 from ROOT import gSystem, gROOT, TCanvas, TGraphErrors, TF1, TFile, TColor, TPad, TGaxis, TAxis
 from draw_functions import prepare_graph, prepare_second_graph, prepare_single_canvas, prepare_double_canvas, draw_text
@@ -88,9 +88,11 @@ graphTitles = ['#color['+str(colour[i])+']{'+t+'}' for i,t in enumerate(graphTit
 # Draw all labels
 if not calo_init.args.noLinearity:
     padRes.cd()
-    draw_text(graphTitles, [0.65,0.95 - 0.08 * len(graphTitles),0.95,0.95], 1, 0).SetTextSize(0.05)
+    draw_text(graphTitles, [0.55,0.95 - 0.08 * len(graphTitles),0.95,0.95], 1, 0).SetTextSize(0.04)
+elif not calo_init.args.specialLabel:
+    draw_text(graphTitles, [0.55,0.95 - 0.08 * len(graphTitles),0.95,0.95], 1, 0).SetTextSize(0.04)
 else:
-    draw_text(graphTitles, [0.65,0.85 - 0.08 * len(graphTitles),0.95,0.85], 1, 0).SetTextSize(0.05)
+    draw_text(graphTitles, [0.55,0.9 - 0.08 * len(graphTitles),0.95,0.85], 1, 0).SetTextSize(0.04)
 draw_text(["energy resolution"], [0.2,0.88, 0.4,0.98], 1, 0).SetTextSize(0.05)
 if calo_init.args.noLinearity and calo_init.args.specialLabel:
     draw_text([calo_init.args.specialLabel], [0.67,0.88, 0.95,0.98], 1, 0).SetTextSize(0.05)
@@ -104,7 +106,7 @@ cRes.Update()
 
 # Save canvas
 if calo_init.output(0):
-    cRes.SaveAs(calo_init.output(0)+".gif")
+    cRes.SaveAs(calo_init.output(0)+".png")
 else:
     cRes.SaveAs("energy_resolution_plots.gif")
 

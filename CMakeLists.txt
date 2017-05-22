@@ -62,7 +62,7 @@ target_link_libraries(CaloAnalysis
   ${ROOT_LIBRARIES} ${ROOT_COMPONENT_LIBRARIES})
 
 if(Boost_FOUND)
-  target_link_libraries(foo ${Boost_LIBRARIES})
+  target_link_libraries(CaloAnalysis ${Boost_LIBRARIES})
 endif()
 
 install(TARGETS CaloAnalysis DESTINATION lib)

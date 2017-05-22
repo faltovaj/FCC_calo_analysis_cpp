@@ -170,8 +170,9 @@ def prepare_single_canvas(name, title):
 
 def prepare_double_canvas(name, title, factor = 1):
    c = TCanvas(name, title, 1200, int(900 + 900 / factor))
-   pad1 = TPad("pad1","pad1",0,0,1,factor / (1 + factor))
-   pad2 = TPad("pad2","pad2",0,factor / (1 + factor),1,1)
+   pad1 = TPad("pad1","pad1",0,0,1,factor / (1. + factor))
+   pad2 = TPad("pad2","pad2",0,factor / (1. + factor),1,1)
+   print("heights:",factor / (1. + factor) )
    pad2.SetBottomMargin(0.01)
    pad2.SetRightMargin(0.03)
    pad2.SetLeftMargin(0.15)
@@ -188,10 +189,10 @@ def prepare_double_canvas(name, title, factor = 1):
    pad2.SetTicky(1)
    pad1.Draw()
    pad2.Draw()
-   pad1.cd()
    ROOT.SetOwnership(c,False)
    ROOT.SetOwnership(pad1,False)
    ROOT.SetOwnership(pad2,False)
+   pad1.cd()
    return c, pad1, pad2
 
 def prepare_divided_canvas(name, title, N):
