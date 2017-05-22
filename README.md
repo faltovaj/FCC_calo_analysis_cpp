@@ -214,7 +214,7 @@ List of additional options:
 
 ## Energy resolution
 
-Input files: ROOT files with energy distribution saved under name "energy" (can be changed using option `-n`). Each ROOT file should contain distribution for one energy. Such input files may be obtained e.g. by `plot_recoMonitor.py` macro.
+Input files: ROOT files with energy distribution saved under name "energy" (can be changed using option `-n`). Each ROOT file should contain distribution for one energy. Such input files may be obtained e.g. by [`plot_recoMonitor.py`](scripts/plot_recoMonitor.py) macro.
 Energy distributions are fitted twice with Gaussian, and the energy resolution plot is fitted with p0+p1/sqrt(E) function.
 
 ~~~{.sh}
@@ -246,6 +246,57 @@ python scripts/plot_compareResolution.py '?/energy_resolution_plots.root' 0 -r n
 ~~~
 
 `formula` inside the legend will be replaced with energy resolution formula with fit parameters.
+
+
+
+## Sampling fraction
+
+Input files: ROOT files with sampling fraction histograms, as generated in [`FCCSW`](https://github.com/HEP-FCC/FCCSW) using [`SamplingFractionInLayers` algorithm](https://github.com/HEP-FCC/FCCSW/blob/master/Detector/DetStudies/src/components/SamplingFractionInLayers.h).
+
+If simulation was performed initially for more layers than the number of layers to study, one can use `--merge` option, specifying the number of consecutive layers to be merged into one layer. E.g. if simulation was run for 10 layers, using `--merge 4 6` means that he sampling fraction is ploted for 2 layers (layers 1-4 as the first layer, and layers 5-10 as the second one).
+
+### Example
+Using the output of an [`example from FCCSW`](https://github.com/HEP-FCC/FCCSW/blob/master/Detector/DetStudies/tests/options/samplingFraction_inclinedEcal.py), one may generate the sampling fraction for the calibration to EM scale.
+
+~~~{.sh}
+python scripts/plot_samplingFraction.py histSF_inclined_e50GeV_eta0_1events.root 0
+~~~
+-> to extract sampling fraction for every existing layer in the geometry;
+
+
+~~~{.sh}
+python scripts/plot_samplingFraction.py histSF_inclined_e50GeV_eta0_1events.root 0 --merge 4 4 4 4 4 4 4 4
+~~~
+-> to extract sampling fraction for 8 layers, created by merging 4 adjacent layers into one;
+
+The output ROOT file, as well as the printout of the macro contain the values of the sampling fractions for detector layers.
+The printout `samplingFraction = [ ... ]` may be directly copied to the option of the [`CalibrateInLayers` algorithm](https://github.com/HEP-FCC/FCCSW/blob/master/Reconstruction/RecCalorimeter/src/components/CalibrateInLayersTool.h), as in the [example](https://github.com/HEP-FCC/FCCSW/blob/master/Reconstruction/RecCalorimeter/tests/options/runEcalInclinedDigitisation.py#L28).
+
+
+## Correction for the upstream material
+
+Input: ROOT file with histograms of the energy in the first layer of the calorimeter (X-axis) and the correspoding energy deposited in the upstream material.
+For sufficiently thin layer it is a linear dependence.
+The parameters for the upstream correction depend on both energy and direction of the particle (pseudorapidity). It is assumed there is no azimuthal angle dependence (which can be checked on the control plot, if `--preview` option is used). `--preview` option also plots the dependence of the upstream energy on the energy deposited in the first layer.
+
+~~~{.sh}
+python scripts/plot_upstreamCorrecton.py histUpstreamCorrection_e?GeV_Bfield1.root 100 -r energy -o Bfield1  --preview
+~~~
+
+Plots a preview plot.
+
+~~~{.sh}
+python scripts/plot_upstreamCorrecton.py histUpstreamCorrection_e?GeV_Bfield1.root 20 50 100 200 500 -r energy -o Bfield1  --preview
+~~~
+
+Plots the energy dependence of parameters. It is assumed that the constant parameter increases linearily with the energy. The slope parameter is fitted with [0]+[1]/sqrt(E) function.
+
+~~~{.sh}
+python scripts/plot_upstreamCorrecton.py histUpstreamCorrection_e?GeV_Bfield1.root 20 50 100 200 500 -r energy --etaValues 0 0.25 0.5 0.75 1.0 1.25 1.5 -o Bfield1  --preview
+~~~
+
+Plots the pseudorapidity dependence of the parameters describing the energy-dependance.
+
 
 # How to create own analysis
 
