@@ -14,5 +14,6 @@
 #pragma link C++ class SimpleClusters+;
 #pragma link C++ class PileupNoise+;
 #pragma link C++ class Decoder+;
+#pragma link C++ class PionAnalysis+;
 
 #endif

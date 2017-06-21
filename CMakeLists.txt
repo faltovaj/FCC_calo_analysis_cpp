@@ -53,6 +53,7 @@ ROOT_GENERATE_DICTIONARY(CaloAnalysisDict
    SimpleClusters.h
    PileupNoise.h
    Decoder.h
+   PionAnalysis.h	
    LINKDEF LinkDef.h)
 
 add_library(CaloAnalysis SHARED ${sources} ${headers} CaloAnalysisDict.cxx)
