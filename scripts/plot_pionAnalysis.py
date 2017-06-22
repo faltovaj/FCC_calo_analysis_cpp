@@ -8,9 +8,9 @@ calo_init.parser.add_argument("--bitfield", help="Bitfield used to encode the ID
 calo_init.parse_args()
 
 
-nameClusterCollection = "caloClusters"
+nameClusterCollection = "EcalClusters"
 nameParticlesCollection = "GenParticles"
-nameCellCollection = "ECalCells"
+nameCellCollection = "ECalPositions"
 bitfield = "system:4,cryo:1,type:3,subtype:3,cell:6,eta:9,phi:10"
 
 from math import pi, floor
@@ -39,7 +39,7 @@ par11 = 4.068
 
 from ROOT import gSystem
 gSystem.Load("libCaloAnalysis")
-from ROOT import ClustersAnalysis, TCanvas, TFile, gStyle, gPad, kGreen, kRed, kBlue, TColor, TF1
+from ROOT import PionAnalysis, TCanvas, TFile, gStyle, gPad, kGreen, kRed, kBlue, TColor, TF1
 from draw_functions import *
 
 # use this script for multiple files
@@ -52,11 +52,15 @@ for ifile, filename in enumerate(calo_init.filenamesIn):
     print "Initial particle energy: " + str(energy) + "GeV"
     print "File with reconstruction results: " + filename
     if doMaterialInFrontCorrection:
-        analysis = ClustersAnalysis(nameClusterCollection,
+        analysis = PionAnalysis(nameClusterCollection,
                                               nameParticlesCollection,
                                               energy,
                                               maxEta, # max eta
                                               maxPhi,
+#                                               nEta, # number of bins in eta                                                                                                                         
+#                                               nPhi, # number of bins in phi                                                                                                                                                     
+#                                               dEta, # tower size in eta                                                                                                                                                      
+#                                               dPhi, # tower size in phi                                                                                                                                                   
                                               nameCellCollection,
                                               bitfield,
                                               "cell", # layer field name in the bitfield
@@ -68,7 +72,7 @@ for ifile, filename in enumerate(calo_init.filenamesIn):
                                               par10,
                                               par11)
     else:
-        analysis = ClustersAnalysis(nameClusterCollection,
+        analysis = PionAnalysis(nameClusterCollection,
                                               nameParticlesCollection,
                                               energy,
                                               maxEta, # max eta
@@ -80,4 +84,5 @@ for ifile, filename in enumerate(calo_init.filenamesIn):
     analysis.loop(filename, calo_init.verbose)
     # retrieve histograms to draw them
     hEnPi = analysis.hPiEnergy
-    hEnPi.Draw()
+#    hEnPi.Draw()
+    print hEnPi.GetEntries(), "  ", hEnPi.GetMean()
