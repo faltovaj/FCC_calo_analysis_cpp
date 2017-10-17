@@ -40,7 +40,7 @@ PionAnalysis::~PionAnalysis(){}
 
 void PionAnalysis::Initialize_histos() {
 
-  hPiEnergy = new TH1F("piEnergy","Energy of pion", 99,0.6*m_energy,1.4*m_energy);
+  hPiEnergy = new TH1F("piEnergy","Energy of pion", 99,0.2*m_energy,1.8*m_energy);
   hPiEnergyCorrected = new TH1F("piEnergyCorrected","Upstream corrected energy of pion", 99,0.2*m_energy,1.8*m_energy);
 
   m_histograms.push_back(hPiEnergy);

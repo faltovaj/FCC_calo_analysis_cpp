@@ -57,7 +57,7 @@ for ifile, filename in enumerate(calo_init.filenamesIn):
                                               energy,
                                               maxEta, # max eta
                                               maxPhi,
-#                                               nEta, # number of bins in eta                                                                                                                         
+#                                               nEta, # number of bins in eta                                                                                                                        
 #                                               nPhi, # number of bins in phi                                                                                                                                                     
 #                                               dEta, # tower size in eta                                                                                                                                                      
 #                                               dPhi, # tower size in phi                                                                                                                                                   

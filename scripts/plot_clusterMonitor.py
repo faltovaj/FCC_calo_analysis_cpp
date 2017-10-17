@@ -73,10 +73,10 @@ for ifile, filename in enumerate(calo_init.filenamesIn):
                                               dPhi, # tower size in phi
                                               nameCellCollection,
                                               bitfield,
-                                              "cell", # layer field name in the bitfield
+                                              "layer", # layer field name in the bitfield
                                               1, # Id of first layer
-                                              4, # Id of last layer that counts as first (= 4*2cm = 8cm layer)
-                                              0.168, # sampling fraction of the first layer, if calibrated cells were given
+                                              1, # Id of last layer that counts as first (= 4*2cm = 8cm layer)
+                                              0.15098, # sampling fraction of the first layer, if calibrated cells were given
                                               par00,
                                               par01,
                                               par10,

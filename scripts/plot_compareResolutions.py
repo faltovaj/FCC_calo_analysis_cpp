@@ -57,12 +57,13 @@ for i,g in enumerate(graphsRes):
     minima.append(g.GetYaxis().GetXmin())
     maxima.append(g.GetYaxis().GetXmax())
 if calo_init.args.axisMax:
-    graphsRes[0].GetYaxis().SetRangeUser(0, calo_init.args.axisMax)
+    graphsRes[0].GetYaxis().SetRangeUser(0.005, calo_init.args.axisMax)
 else:
     graphsRes[0].GetYaxis().SetRangeUser(0.8*min(minima),0.55*max(maxima))
 if not calo_init.args.noLinearity:
     for gLin, gRes in zip(graphsLin, graphsRes):
         prepare_second_graph(gLin, gRes, gLin.GetName(), gLin.GetTitle(), factor)
+    graphsLin[0].GetYaxis().SetRangeUser(-0.11,0.11)
 
 # Draw graphs
 graphsRes[0].Draw("aep")
@@ -82,17 +83,17 @@ elif calo_init.args.legend:
 else:
     graphTitles=[]
 for ileg, legend in enumerate(graphTitles):
-    graphTitles[ileg] = legend.replace("formula","#frac{#sigma_{E}}{E} = #frac{"+str(round(samplTerm[ileg]*100.,2))+"%}{#sqrt{E}} + "+str(round(constTerm[ileg]*100.,2))+"%")
+    graphTitles[ileg] = legend.replace("formula","#frac{#sigma_{E}}{E} = #frac{"+str(round(samplTerm[ileg]*100.,1))+"%}{#sqrt{E}} #oplus "+str(round(constTerm[ileg]*100.,1))+"%")
 graphTitles = ['#color['+str(colour[i])+']{'+t+'}' for i,t in enumerate(graphTitles)]
 
 # Draw all labels
 if not calo_init.args.noLinearity:
     padRes.cd()
-    draw_text(graphTitles, [0.55,0.95 - 0.08 * len(graphTitles),0.95,0.95], 1, 0).SetTextSize(0.04)
+    draw_text(graphTitles, [0.35,0.85 - 0.1 * len(graphTitles),0.85,0.85], 1, 0).SetTextSize(0.05)
 elif not calo_init.args.specialLabel:
-    draw_text(graphTitles, [0.55,0.95 - 0.08 * len(graphTitles),0.95,0.95], 1, 0).SetTextSize(0.04)
+    draw_text(graphTitles, [0.55,0.95 - 0.1 * len(graphTitles),0.95,0.95], 1, 0).SetTextSize(0.04)
 else:
-    draw_text(graphTitles, [0.55,0.9 - 0.08 * len(graphTitles),0.95,0.85], 1, 0).SetTextSize(0.04)
+    draw_text(graphTitles, [0.55,0.9 - 0.1 * len(graphTitles),0.95,0.85], 1, 0).SetTextSize(0.04)
 draw_text(["energy resolution"], [0.2,0.88, 0.4,0.98], 1, 0).SetTextSize(0.05)
 if calo_init.args.noLinearity and calo_init.args.specialLabel:
     draw_text([calo_init.args.specialLabel], [0.67,0.88, 0.95,0.98], 1, 0).SetTextSize(0.05)
@@ -100,7 +101,8 @@ if not calo_init.args.noLinearity:
     padLin.cd()
     draw_text(["linearity"], [0.2,0.78, 0.4,0.88], 1, 0).SetTextSize(0.05*factor)
     if calo_init.args.specialLabel:
-        draw_text([calo_init.args.specialLabel], [0.67,0.78, 0.95,0.88], 1, 0).SetTextSize(0.05*factor)
+        draw_text([calo_init.args.specialLabel, 'electrons, #eta = 0, B = 4T'], [0.67,0.68, 0.95,0.88], 1, 0).SetTextSize(0.05*factor)
+
 
 cRes.Update()
 

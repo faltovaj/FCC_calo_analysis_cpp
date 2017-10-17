@@ -31,16 +31,28 @@ void ShowerProfiles::Initialize_histos()
   h_cellEnergy = new TH1F("h_cellenergy","", 100, m_energy-0.2*m_energy, m_energy+0.2*m_energy);
   m_histograms.push_back(h_cellEnergy);
 
-  h_radialProfile = new TH1F("h_radialProfile","", 100, 0, 10);
+  h_radialProfile_x0 = new TH1F("h_radialProfile_x0","", 100, 0, 10);
+  m_histograms.push_back(h_radialProfile_x0);
+
+  h_longProfile_x0 = new TH1F("h_longProfile_x0","", 45, 0, 45);
+  m_histograms.push_back(h_longProfile_x0);
+
+  h_radialProfile_particle_x0 = new TH1F("h_radialProfile_particle_x0","", 100, 0, 10);
+  m_histograms.push_back(h_radialProfile_particle_x0);
+
+  h_longProfile_particle_x0 = new TH1F("h_longProfile_particle_x0","", 45, 0, 45);
+  m_histograms.push_back(h_longProfile_particle_x0);
+
+  h_radialProfile = new TH1F("h_radialProfile","", 100, 0, 100);
   m_histograms.push_back(h_radialProfile);
 
-  h_longProfile = new TH1F("h_longProfile","", 116, 0, 45);
+  h_longProfile = new TH1F("h_longProfile","", 45, 0, RcaloThickness);
   m_histograms.push_back(h_longProfile);
 
-  h_radialProfile_particle = new TH1F("h_radialProfile_particle","", 100, 0, 10);
+  h_radialProfile_particle = new TH1F("h_radialProfile_particle","", 100, 0, 100);
   m_histograms.push_back(h_radialProfile_particle);
 
-  h_longProfile_particle = new TH1F("h_longProfile_particle","", 116, 0, 45);
+  h_longProfile_particle = new TH1F("h_longProfile_particle","", 45, 0, RcaloThickness);
   m_histograms.push_back(h_longProfile_particle);
 
   h_ptGen = new TH1F("h_ptGen","", 100, m_energy-0.2*m_energy, m_energy+0.2*m_energy);
@@ -57,7 +69,7 @@ void ShowerProfiles::processEvent(podio::EventStore& aStore, int aEventId, bool 
   const fcc::PositionedCaloHitCollection*     colECalPositionedHits(nullptr);
 
   bool colMCParticlesOK = aStore.get("GenParticles", colMCParticles);
-  bool colECalPositionedHitsOK     = aStore.get("ECalPositionedHits" , colECalPositionedHits);
+  bool colECalPositionedHitsOK     = aStore.get("ECalPositions" , colECalPositionedHits);
 
   //Total hit energy per event
   SumE_hit = 0.;
@@ -190,10 +202,14 @@ void ShowerProfiles::processEvent(podio::EventStore& aStore, int aEventId, bool 
        }
        */
        //Fill longitudinal and radial profile histograms
-       h_radialProfile_particle->Fill(hitRadial_particle/X0, hitEnergy*m_sf);
-       h_longProfile_particle->Fill(hitLong_particle/X0, hitEnergy*m_sf);
-       h_radialProfile->Fill(hitRadial/X0, hitEnergy*m_sf);
-       h_longProfile->Fill(hitLong/X0, hitEnergy*m_sf);
+       h_radialProfile_particle_x0->Fill(hitRadial_particle/X0, hitEnergy*m_sf);
+       h_radialProfile_particle->Fill(hitRadial_particle, hitEnergy*m_sf);
+       h_longProfile_particle_x0->Fill(hitLong_particle/X0, hitEnergy*m_sf);
+       h_longProfile_particle->Fill(hitLong_particle, hitEnergy*m_sf);
+       h_radialProfile_x0->Fill(hitRadial/X0, hitEnergy*m_sf);
+       h_radialProfile->Fill(hitRadial, hitEnergy*m_sf);
+       h_longProfile_x0->Fill(hitLong/X0, hitEnergy*m_sf);
+       h_longProfile->Fill(hitLong, hitEnergy*m_sf);
 
      }
    if (aVerbose) std::cout << "Total hit energy (GeV): " << SumE_hit << " total cell energy (GeV): " << SumE_hit*m_sf << " hit collection size: " << colECalPositionedHits->size() << std::endl;
@@ -207,6 +223,11 @@ void ShowerProfiles::processEvent(podio::EventStore& aStore, int aEventId, bool 
 }
 
 void ShowerProfiles::finishLoop(int aNumEvents, bool aVerbose) {
+  h_radialProfile_x0->Scale(1./(double)aNumEvents);
+  h_longProfile_x0->Scale(1./(double)aNumEvents);
+  h_radialProfile_particle_x0->Scale(1./(double)aNumEvents);
+  h_longProfile_particle_x0->Scale(1./(double)aNumEvents);
+
   h_radialProfile->Scale(1./(double)aNumEvents);
   h_longProfile->Scale(1./(double)aNumEvents);
   h_radialProfile_particle->Scale(1./(double)aNumEvents);

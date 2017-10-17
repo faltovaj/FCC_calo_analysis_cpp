@@ -22,17 +22,23 @@ from math import sqrt
 gRes = TGraphErrors()
 gLin = TGraphErrors()
 
+f = []
+cc = TCanvas("cc","cc",1000,1200)
+cc.Divide(2,3)
 # first get all the resolutions and prepare graphs
 for ifile, filename in enumerate(calo_init.filenamesIn):
     energy = calo_init.energy(ifile)
-    f = TFile(filename, "READ")
-    htotal = f.Get(histName)
+    f.append(TFile(filename, "READ"))
+    htotal = f[ifile].Get(histName)
     myfunPre = TF1("firstGaus","gaus", htotal.GetMean() - 2. * htotal.GetRMS(),
                    htotal.GetMean() + 2. * htotal.GetRMS())
+    cc.cd(ifile+1)
     resultPre = htotal.Fit(myfunPre, "SRQN")
+    #resultPre = htotal.Fit(myfunPre, "SRN") 
     myfun = TF1("finalGaus", "gaus", resultPre.Get().Parameter(1) - 2. * resultPre.Get().Parameter(2),
                 resultPre.Get().Parameter(1) + 2. * resultPre.Get().Parameter(2) )
-    result = htotal.Fit(myfun, "SRQN")
+    #result = htotal.Fit(myfun, "SRQN")
+    result = htotal.Fit(myfun, "SR") 
     resolution = result.Get().Parameter(2) / result.Get().Parameter(1)
     resolutionErrorSigma = result.Get().Error(2) / result.Get().Parameter(1)
     resolutionErrorMean = result.Get().Error(1) * result.Get().Parameter(2) / ( result.Get().Parameter(1) ** 2)

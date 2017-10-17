@@ -186,7 +186,7 @@ python scripts/plot_recoMonitor.py root://eospublic.cern.ch//eos/fcc/users/n/nov
 
 --- Everything in reconstruction file (GenParticles, GenVertices, Cells, Clusters), simulations for Berlin
 **** Upstream material 1.2 X0, B = 4 T
-python scripts/plot_clusterAnalysis.py root://eospublic.cern.ch//eos/fcc/users/n/novaj/combCaloForBerlin/output_combCalo_reconstructionSW_e?GeV_bfield1_eta0_v2.root 20 50 100 500 1000 --clusterColl CombinedClusters --correctionParams 0.1037 0.0007507 0.1382 1.002 --cellColl ECalCellsForSW --bitfield system:4,cryo:1,type:3,subtype:3,cell:6,eta:9,phi:10 -o combCalo_?GeV_bfield1_eta0 -r energy
+python scripts/plot_clusterAnalysis.py root://eospublic.cern.ch//eos/experiment/fcc/users/n/novaj/afterBerlin_June/output_combCalo_reconstructionSW_e?GeV_bfield1_eta0_sw9eta17phi.root 20 50 100 300 500 1000 --clusterColl EcalClusters --correctionParams 0.1235 0.0004518 4.464 2.061 --cellColl ECalCellsForSW --bitfield system:4,cryo:1,module:11,type:3,subtype:3,layer:8,eta:9,phi:10 -o clusters_sw9eta17phi_?GeV_eta0 -r energy
 **** Upstream material 1.2 X0, B = 0 T
 python scripts/plot_clusterAnalysis.py root://eospublic.cern.ch//eos/fcc/users/n/novaj/combCaloForBerlin/output_combCalo_reconstructionSW_e?GeV_bfield0_eta0_v2.root 20 50 100 500 1000 --clusterColl CombinedClusters --correctionParams 0.05774 0.000315 0.0621 0.8285 --cellColl ECalCellsForSW --bitfield system:4,cryo:1,type:3,subtype:3,cell:6,eta:9,phi:10 -o combCalo_?GeV_bfield0_eta0 -r energy
 

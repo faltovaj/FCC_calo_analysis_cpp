@@ -25,12 +25,20 @@ class ShowerProfiles: public BaseAnalysis {
   /// Calibrated hit energy (SF)
   TH1F* h_cellEnergy;
   /// Radial profile, direction of the shower from hits in the first layer
-  TH1F* h_radialProfile;
+  TH1F* h_radialProfile_x0;
   /// Long. profile, direction of the shower from hits in the first layer
-  TH1F* h_longProfile;
+  TH1F* h_longProfile_x0;
   /// Radial profile, direction of the shower from the generated particle
-  TH1F* h_radialProfile_particle;
+  TH1F* h_radialProfile_particle_x0;
   /// Long. profile, direction of the shower from the generated particle
+  TH1F* h_longProfile_particle_x0;
+  /// Radial profile, direction of the shower from hits in the first layer                                                                                                                    
+  TH1F* h_radialProfile;
+  /// Long. profile, direction of the shower from hits in the first layer                                                                                                                      
+  TH1F* h_longProfile;
+  /// Radial profile, direction of the shower from the generated particle                                                                                                                       
+  TH1F* h_radialProfile_particle;
+  /// Long. profile, direction of the shower from the generated particle                                                                                                                        
   TH1F* h_longProfile_particle;
   /// pt of the generated particle
   TH1F* h_ptGen;
@@ -42,9 +50,9 @@ class ShowerProfiles: public BaseAnalysis {
   double m_energy;
   double m_sf;
   double SumE_hit;    // Total hit energy per event
-  const double RcaloMin = 1950.;
-  const double RcaloThickness = 800.;
-  const double layerThickness = 6.;
+  const double RcaloMin = 1920.;
+  const double RcaloThickness = 650.;
+  const double layerThickness = 80.;
   const double EtaMax = 10.0;
   const double X0 = 15.586; //average X0 for 4 mm Lar + 2 mm Pb
 

@@ -169,7 +169,7 @@ def prepare_single_canvas(name, title):
    return c
 
 def prepare_double_canvas(name, title, factor = 1):
-   c = TCanvas(name, title, 1200, int(900 + 900 / factor))
+   c = TCanvas(name, title, 900, int(900 + 900 / factor))
    pad1 = TPad("pad1","pad1",0,0,1,factor / (1. + factor))
    pad2 = TPad("pad2","pad2",0,factor / (1. + factor),1,1)
    print("heights:",factor / (1. + factor) )

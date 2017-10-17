@@ -45,12 +45,12 @@ draw_1histogram(ma.h_cellEnergy, "Total cell energy [GeV]","")
 if (ma.h_cellEnergy.GetEntries()>50):
     ma.h_cellEnergy.Fit("gaus")
 c1.cd(5)
-draw_2histograms(ma.h_longProfile_particle, ma.h_longProfile, "Longitudinal distance/X0", "Energy [GeV]", "Particle dir.", "Hits in 1st layer")
+draw_2histograms(ma.h_longProfile_particle, ma.h_longProfile, "Longitudinal distance [mm]", "Energy [GeV]", "Particle dir.", "Hits in 1st layer")
 fit.SetParameters(100, 8.15/1.15,1.0/1.15);
 ma.h_longProfile.Fit("fit")
 gPad.SetLogy(1)
 c1.cd(6)
-draw_2histograms(ma.h_radialProfile_particle, ma.h_radialProfile, "Radial distance/X0", "Energy [GeV]", "Particle dir.", "Hits in 1st layer")
+draw_2histograms(ma.h_radialProfile_particle, ma.h_radialProfile, "Radial distance [mm]", "Energy [GeV]", "Particle dir.", "Hits in 1st layer")
 
 raw_input("Press ENTER to exit")
 #c1.SaveAs("plots_"+PARTICLE+str(ENERGY)+".gif")
