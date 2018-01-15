@@ -1,6 +1,7 @@
 #include "Decoder.h"
 #include <boost/algorithm/string.hpp>
 #include <boost/lexical_cast.hpp>
+#include <vector>
 #include <iostream>
 
 Decoder::Decoder(const std::string& aDescr): m_description(aDescr), m_currentValue(0) {

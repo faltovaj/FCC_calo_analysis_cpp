@@ -298,6 +298,14 @@ python scripts/plot_upstreamCorrecton.py histUpstreamCorrection_e?GeV_Bfield1.ro
 Plots the pseudorapidity dependence of the parameters describing the energy-dependance.
 
 
+### Investigate cells
+python scripts/investigateCells.py ../FCCSW/output_fullCalo_SimAndDigi_e50GeV_3events.root 0 --cellColl ECalBarrelCells --bitfield system:4,cryo:1,module:11,type:3,subtype:3,layer:8,eta:9,phi:10
+
+### Pileup
+python scripts/prepare_pileup_inclBarrel.py '/eos/experiment/fcc/users/n/novaj/fullCaloSystem/minBias/output_minbias_combCalo_bfield_part451_v2.root' 0 --cellColl ECalBarrelCells --bitfield system:4,cryo:1,type:3,subtype:3,layer:8,eta:9,phi:10
+
+python scripts/prepare_pileup_inclBarrel.py '/eos/experiment/fcc/users/n/novaj/fullCaloSystem/minBias/output_minbias_combCalo_bfield_part45?_v2.root' 0 -r 1 2 3 4 5 6 7 8 9 --cellColl ECalBarrelCells --bitfield system:4,cryo:1,type:3,subtype:3,layer:8,eta:9,phi:10 -o 'pileupTest?'
+
 # How to create own analysis
 
 1. Create Class deriving from `BaseAnalysis` or `BaseTwoFileAnalysis`. Include:

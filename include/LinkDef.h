@@ -13,6 +13,8 @@
 #pragma link C++ class ClustersAnalysis+;
 #pragma link C++ class SimpleClusters+;
 #pragma link C++ class PileupNoise+;
+#pragma link C++ class PileupNoiseSignalCells+;
+#pragma link C++ class InvestigateCells+;
 #pragma link C++ class Decoder+;
 
 #endif
