@@ -52,7 +52,6 @@ ROOT_GENERATE_DICTIONARY(CaloAnalysisDict
    ClustersAnalysis.h
    SimpleClusters.h
    PileupNoise.h
-   PileupNoiseSignalCells.h
    InvestigateCells.h
    Decoder.h
    LINKDEF LinkDef.h)
