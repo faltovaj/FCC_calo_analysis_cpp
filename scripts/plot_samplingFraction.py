@@ -1,3 +1,4 @@
+from __future__ import print_function
 import calo_init
 calo_init.add_defaults()
 calo_init.parser.add_argument("--merge", help="merge layers", default = [1] * 8, type = int, nargs='+') # bin 0 is empty! (before calo)
@@ -8,24 +9,34 @@ calo_init.parser.add_argument("-max","--axisMax", help="Maximum of the axis", ty
 calo_init.parser.add_argument("-min","--axisMin", help="Minimum of the axis", type = float)
 calo_init.parser.add_argument("--totalNumLayers", default = 8, help="Total number of the layers used in simulation", type = int)
 calo_init.parser.add_argument("--numFirstLayer", default = 0, help="ID of first layer used in histograms name", type = int)
-calo_init.parser.add_argument("--layerWidth", default = 2, help="Width of the layer (cm)", type = float)
+calo_init.parser.add_argument("--layerWidth", default = [2] , nargs='+', help="Width of the layers (cm). One value for identical widths of each layer.", type = float)
 calo_init.parser.add_argument("--X0density", default = 0.422, help="Xo density of a current detector (X0/cm)", type = float)
 calo_init.parser.add_argument("--roundBrackets", help="Use round brackets for unit", action = 'store_true')
 calo_init.parser.add_argument("--preview", help="Plot preview of fits", action = 'store_true')
-calo_init.parser.add_argument("--specialLabel", help="Additional label to be plotted", type=str, default = "FCC-hh simulation")
+calo_init.parser.add_argument("--specialLabel", help="Additional label to be plotted", type=str, default = "")
 calo_init.parse_args()
+print('START')
 calo_init.print_config()
 
 histName = calo_init.args.histogramName
 histNameMean = calo_init.args.histogramNameMean
 
-from ROOT import gSystem, gROOT, TCanvas, TH1F, TGraphErrors, TF1, gStyle, kRed, kBlue, kGray, TFile, TTree, TPad, TGaxis, gPad, TLine
+from ROOT import gSystem, gROOT, TCanvas, TH1F, TGraphErrors, TF1, gStyle, kRed, kBlue, kGray, TFile, TTree, TPad, TGaxis, gPad, TLine, TColor
 from draw_functions import prepare_graph, prepare_divided_canvas,  prepare_single_canvas, draw_text, draw_1histogram
 import numpy
 from math import sqrt, ceil, floor
 
 merge = [sum(calo_init.args.merge[:i]) for i in range(0,len(calo_init.args.merge))]
+print('merge',merge)
 sliceWidth = calo_init.args.layerWidth  # cm
+if len(sliceWidth) == 1:
+    sliceWidth = sliceWidth * len(merge)
+sliceSum = []
+sumWidths = 0
+for width in sliceWidth:
+    sumWidths += width
+    sliceSum.append(sumWidths)
+print('sliceWidths',sliceWidth)
 startIndex = calo_init.args.numFirstLayer
 Nslices = calo_init.args.totalNumLayers
 if sum(calo_init.args.merge) != Nslices:
@@ -33,8 +44,12 @@ if sum(calo_init.args.merge) != Nslices:
     exit(0)
 Nslicesmerged = len(merge)
 all_graphs = []
+graphTitles = []
 avgSF = []
 avgSFerr = []
+
+colour = ['#4169E1','#D2691E','#228B22','#DC143C','#696969','#9932CC','#D2B48C', 1, 2, 3, 4, 5, 6, 7, 8, 9,10]
+colour = [TColor.GetColor(c) for c in colour]
 
 # first get all the resolutions and prepare graphs
 for ifile, filename in enumerate(calo_init.filenamesIn):
@@ -70,7 +85,7 @@ for ifile, filename in enumerate(calo_init.filenamesIn):
         fitoptions = "SQRN"
     for islice, h in enumerate(hmerged):
         fitPre = TF1("fitPre","gaus", h.GetMean() - 1. * h.GetRMS(), h.GetMean() + 1. * h.GetRMS())
-        h.Rebin(10)
+        h.Rebin(1)
         resultPre = h.Fit(fitPre, fitoptions)
         fit = TF1("fit","gaus",resultPre.Get().Parameter(1) - 2. * resultPre.Get().Parameter(2), resultPre.Get().Parameter(1) + 2. * resultPre.Get().Parameter(2) )
         result = h.Fit(fit, fitoptions)
@@ -84,13 +99,20 @@ for ifile, filename in enumerate(calo_init.filenamesIn):
             draw_1histogram(h,"","")
         # make graph
         if result:
-            if islice < len(merge) - 1:
-                gSF.SetPoint(islice, (merge[islice] + 0.5 * (merge[islice + 1] - merge[islice])) * sliceWidth, result.Get().Parameter(1))
-                gSF.SetPointError(islice, 0.5 * (merge[islice + 1] - merge[islice]) * sliceWidth , result.Get().Parameter(2))
-            else:
-                gSF.SetPoint(islice, (merge[islice] + 0.5 * (merge[islice] - merge[islice - 1])) * sliceWidth, result.Get().Parameter(1))
-                gSF.SetPointError(islice, 0.5 * (merge[islice] - merge[islice - 1]) * sliceWidth , result.Get().Parameter(2))
+            gSF.SetPoint(islice, sliceSum[islice]-sliceWidth[islice]*0.5, result.Get().Parameter(1))
+            gSF.SetPointError(islice, sliceWidth[islice]*0.5 , result.Get().Parameter(2))
+    prepare_graph(gSF, 'sf_'+str(len(merge))+'layers', ';radial depth [cm];sampling fraction', ifile+9)
     all_graphs.append(gSF)
+    graphTitles.append('#color['+str(colour[ifile])+']{'+str(energy)+' GeV e^{-}}')
+    print("samplFractMap ["+str(energy)+"]= ", end='')
+    for islice in range(0, Nslicesmerged):
+        if islice == 0:
+            print("{ ", end='')
+        if islice > 0:
+            print(", ", end='')
+        print(str(gSF.GetY()[islice]), end='')
+    print("};")
+
 
 canv = prepare_single_canvas('sf_e'+str(energy)+'GeV', 'Sampling fraction for '+str(energy)+'GeV')
 
@@ -107,35 +129,14 @@ canv.Update()
 
 lines = []
 for iLine, line in enumerate(avgSF):
-    lines.append(TLine(0, avgSF[iLine], Nslices * sliceWidth, avgSF[iLine]))
-    lines[iLine].SetLineColor(iLine+1)
+    lines.append(TLine(0, avgSF[iLine], 65, avgSF[iLine]))
+    lines[iLine].SetLineColor(colour[iLine])
+    all_graphs[iLine].SetMarkerColor(colour[iLine])
+    all_graphs[iLine].SetLineColor(colour[iLine])
     lines[iLine].Draw('same')
 
-# add second axis
-canv.SetRightMargin(0.1)
-all_graphs[0].GetXaxis().SetRangeUser(0,68)
-all_graphs[0].GetXaxis().SetLabelOffset(0.02)
-gPad.RangeAxis(0,gPad.GetUymin(),68,gPad.GetUxmax())
-axis = TGaxis(gPad.GetUxmin(),
-              gPad.GetUymin(),
-              gPad.GetUxmax(),
-              gPad.GetUymin(),
-              gPad.GetUxmin() * calo_init.args.X0density,
-              gPad.GetUxmax() * calo_init.args.X0density,506,"-")
-axis.SetLabelSize(0.05)
-axis.SetTitleSize(0.07)
-axis.SetTitleOffset(0.9)
-axis.SetLabelOffset(0.02)
-axis.Draw()
-axis.SetLabelFont(42)
-unit1 = draw_text(['(cm)'],[0.91,0.09,1,0.14] , 1, 0)
-unit1.SetTextSize(0.05)
-unit1.SetTextFont(42)
-unit2 = draw_text(['(X_{0})'],[0.91,0.16,1,0.21] , 1, 0)
-unit2.SetTextSize(0.05)
-unit2.SetTextFont(42)
-canv.Update()
-
+if len(graphTitles) > 1:
+    draw_text(graphTitles, [0.18,0.9 - 0.07 * len(graphTitles),0.4,0.95], 0.4, 0).SetTextSize(0.06)
 
 # Draw all labels
 if calo_init.args.specialLabel:
@@ -144,13 +145,13 @@ canv.Update()
 
 # Save canvas and root file with graph, const term and sampling term
 if calo_init.output(0):
-    canv.SaveAs(calo_init.output(0)+".pdf")
+    canv.SaveAs(calo_init.output(0)+".eps")
     canv.SaveAs(calo_init.output(0)+".png")
     plots = TFile(calo_init.output(0)+".root","RECREATE")
     if calo_init.args.preview:
         cPreview.SaveAs("preview_"+calo_init.output(0)+".png")
 else:
-    canv.SaveAs("sampling_fraction_plots.pdf")
+    canv.SaveAs("sampling_fraction_plots.eps")
     canv.SaveAs("sampling_fraction_plots.png")
     plots = TFile("sampling_fraction.root","RECREATE")
     if calo_init.args.preview:
@@ -171,15 +172,4 @@ for islice in range(0, Nslicesmerged):
 plots.Write()
 plots.Close()
 
-print("============================================================")
-print("== to be used in FCCSW, with CalibrateInLayers algorithm: ==")
-print("============================================================")
-print"samplingFraction = ",
-for islice in range(0, Nslicesmerged):
-    if islice > 0:
-        print" + ",
-    print"["+str(gSF.GetY()[islice])+"] * "+str(calo_init.args.merge[islice]),
-print()
-print("============================================================")
-
-input("Press ENTER to exit")
+raw_input("Press ENTER to exit")
